@@ -1,0 +1,91 @@
+---
+title: "Assignment 1 FML"
+author: "Nikhila Reddy"
+date: "2024-02-02"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+ #I have assigned variable "supermarket_sales" to the supermarket_sales dataset
+```{r}
+supermarket_sales <- read.csv("C:\\Users\\Nikhi\\Downloads\\archive (2)\\supermarket_sales - Sheet1.csv")
+View(supermarket_sales)
+
+```
+
+```{r}
+mode(supermarket_sales$Quantity)
+```
+```{r}
+median(supermarket_sales$Unit.price)
+```
+```{r}
+mean(supermarket_sales$Unit.price)
+```
+```{r}
+max(supermarket_sales$Unit.price)
+```
+```{r}
+sd(supermarket_sales$Unit.price)
+```
+These values represent descriptive statistics for a selection of quantitave variables.
+The above mentioned values determines mode, median, standard deviation, maximum for the quatitative variables.
+
+```{r}
+str(supermarket_sales$Payment)
+```
+These values represent categorical descriptive analysis of variables.
+
+
+
+I Summarized descriptive statistics for a selection of quantitative and categorical variables. / Whereas categorical is "Branch"  And quantitative is "Unit.price"
+```{r}
+summary(supermarket_sales$Branch)
+
+```
+```{r}
+summary(supermarket_sales$Unit.price)
+```
+I have transformed the Unit.price to a new amount by raising it.
+
+
+```{r}
+increased_Unit.price <- sqrt(supermarket_sales$Unit.price)
+new_price <- (supermarket_sales$Unit.price - increased_Unit.price)
+
+```
+
+I generated a scatter plot correlating "Rating" with "Unit.price"
+```{r}
+x <-supermarket_sales$Rating
+y <-supermarket_sales$Unit.price
+plot(x,y, main="scatterplot", xlab = "Rating" , ylab = "Unit.price")
+
+
+```
+
+
+The below graphical representation is a histogram.
+
+```{r}
+
+hist(supermarket_sales$Unit.price)
+```
+
+
+
+ The above graphical representation is a histogram 
+
+
+
+
+
+
+      This dataset is imported from : https://www.kaggle.com/datasets/aungpyaeap/supermarket-sales

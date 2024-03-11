@@ -1,0 +1,150 @@
+---
+title: "Assignment_3"
+author: "Nikhila Reddy"
+date: "2024-03-10"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+#Importing the dataset
+
+```{r}
+Universal_Bank_1 <- read.csv("C:\\Users\\Nikhi\\Downloads\\Universal_Bank_1.csv")
+```
+
+
+#Loading the required packages.
+
+```{r}
+library("caret")
+```
+
+##Loading required package: ggplot2
+##Loading required package: lattice
+
+```{r}
+library("ISLR")
+library("ggplot2")
+library("class")
+library("lattice")
+library("reshape2")
+```
+
+#install.packages("melt")
+
+```{r}
+library("melt")
+```
+
+#Transforming to factor variable.
+
+```{r}
+Universal_Bank_1$Personal.Loan <- as.factor(Universal_Bank_1$Personal.Loan)
+Universal_Bank_1$Online <- as.factor(Universal_Bank_1$Online)
+Universal_Bank_1$CreditCard <- as.factor(Universal_Bank_1$CreditCard)
+```
+
+#Checking the summary of the dataset.
+
+```{r}
+summary(Universal_Bank_1)
+```
+#The above data represents summary for the given dataset.
+
+
+#Separating the entire dataset into training and testing subsets, 
+#Allocating 60% designated for training and 40% for validation.
+
+```{r}
+set.seed(23)
+```
+
+```{r}
+Split_Index <- createDataPartition(Universal_Bank_1$Personal.Loan, p=0.6, list = FALSE)
+Train_data <- Universal_Bank_1[Split_Index,]
+Validation_data <- Universal_Bank_1[-Split_Index,]
+```
+
+#The above data is now splitted into training (60%) and testing (40%) sets.
+
+```{r}
+dim(Train_data)
+```
+```{r}
+dim(Validation_data)
+```
+
+```{r}
+normalising1 <- preProcess(Train_data[, -c(10,13:14)],method = c("center","scale"))
+Train_data1 <- predict(normalising1,Train_data)
+Validation_data1 <- predict(normalising1,Validation_data)
+```
+
+A)Create a pivot table for the training data with Online as a column variable, and Loan as a secondary row variable. The values inside the table should convey tye count. In R use functions melt() ad cast(), or function table(). In Python, use panda dataframe methods melt() and pivot()
+
+```{r}
+PTable_1 <- ftable(Train_data1[,c(14,10,13)])
+PTable_1
+```
+#Here 14- CreditCard, 10- Personal.Loan, 13- Online
+
+B) Consider the task of classifying a customer who owns a bank credit card and is actively using online banking services. Looking at the pivot table, What is the probability that this customer will accept the loan offer?
+
+Ans) Utilizing the data from the pivot table, we can calculate the likelihood of the customer acceting the loan offer as 52/(52+503), resulting in a probability of 0.096.
+
+C) Create two seperate pivot tables for the training data. One will have Loan (rows) as a function of Online(Columns) and the other will have Loan(rows) as a function of CC.
+
+```{r}
+melt_1 <- melt(Train_data1,id=c("Personal.Loan"),variable="Online")
+```
+```{r}
+melt_2 <- melt(Train_data1,id=c("Personal.Loan"),variable="CreditCard")
+```
+```{r}
+cast_1 = dcast(melt_1, Personal.Loan~Online)
+```
+```{r}
+cast_2 <- dcast(melt_2, Personal.Loan~CreditCard)
+```
+D) Compute the following quantities [P(A | B) means “the probability ofA given B”]:
+i. P(CC = 1 | Loan = 1) (the proportion of credit card holders among the loan acceptors)
+ii. P(Online = 1 | Loan = 1)
+iii. P(Loan = 1) (the proportion of loan acceptors)
+iv. P(CC = 1 | Loan = 0)
+v. P(Online = 1 | Loan = 0)
+vi. P(Loan = 0)
+
+```{r}
+ftable(Train_data1[,c(10,13)])
+```
+```{r}
+ftable(Train_data1[,c(10,14)])
+```
+ 1.P(CC = 1 | Loan = 1) = (92/92+196) = 0.319
+ 2.P(Online = 1 | Loan = 1) = (167/167+121) = 0.579
+ 3.P(Loan = 1) = (288/288+2712) = 0.096
+ 4.P(CC = 1 | Loan = 0) = (812/812+1900) = 0.299
+ 5.P(Online = 1 | Loan = 0) = (1624/ 1624+1088) = 0.598
+ 6.P(Loan = 0) = (2712/ 2712+288) = 0.904
+
+E). Use the quantities computed above to compute the naive Bayes probability P(Loan = 1 | CC = 1, Online = 1) 
+Ans) (0.319*0.579*0.096)/(0.319*0.579*0.096) + (0.299*0.598*0.904)= 0.098
+
+F).Compare this value with the one obtained from the pivot table in (B). Which is a more accurate estimate? 
+Ans) In section B, we derived a probability value of 0.096, and in the previous question, we computed a probability value of 0.098. Despite these slight differences, it's essential to highlight that in part B, we incorporated a broader range of dependent information. Consequently, we can confidently state that the value obtained in part B offers a more precise and nuanced representation of the dataset
+
+G). Which of the entries in this table are needed for computing P(Loan = 1 | CC = 1, Online = 1)? Run naive Bayes on the data. Examine the model output on training data, and find the entry that corresponds to P(Loan = 1 | CC = 1, Online = 1). Compare this to the number you obtained in (E)
+ 
+#install.packages("naivebayes")
+
+```{r}
+library("naivebayes")
+```
+
+```{r}
+naive_b <- naive_bayes(Personal.Loan~Online+CreditCard,data=Train_data1)
+naive_b
+```
+-The probability of a customer accepting the loan, utilizing a credit card, and participating in online banking is 0.096 as per the Naive Bayes Model. This outcome closely aligns with the value derived in section E of our analysis.
